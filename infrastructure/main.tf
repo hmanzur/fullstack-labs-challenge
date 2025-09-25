@@ -42,6 +42,11 @@ resource "aws_cloudfront_distribution" "cdn" {
       restriction_type = "none"
     }
   }
+  
+  tags = {
+    Name        = "${var.name}-${var.environment}-cdn"
+    Description = "CloudFront distribution for ${var.name} in the ${var.environment} environment, serving content from the associated S3 bucket"
+  }
 }
 
 data "aws_iam_policy_document" "origin" {
