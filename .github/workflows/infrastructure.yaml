@@ -56,4 +56,4 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve
         env:
-          TF_VAR_environment=${{ matrix.environment }}
+          TF_VAR_environment: ${{ matrix.environment }}
