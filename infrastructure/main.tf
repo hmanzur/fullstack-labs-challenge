@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "site" {
-  bucket = "hmanzursoft-fullstacklabs-${var.name}-${var.environment}"
+  bucket = "hmanzursoft-2025-09-${var.name}-${var.environment}"
 }
 
 resource "aws_cloudfront_origin_access_control" "origin" {
