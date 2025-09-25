@@ -12,6 +12,7 @@ env:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    environment: devel
     defaults:
       run:
         working-directory: infrastructure
@@ -39,6 +40,8 @@ jobs:
     needs: 
       - validate
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ matrix.environment }}
     defaults:
       run:
         working-directory: infrastructure
