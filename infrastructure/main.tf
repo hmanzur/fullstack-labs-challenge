@@ -71,7 +71,7 @@ data "aws_iam_policy_document" "origin" {
   }
 }
 
-resource "aws_s3_bucket_policy" "b" {
+resource "aws_s3_bucket_policy" "policy" {
   bucket = aws_s3_bucket.site.bucket
   policy = data.aws_iam_policy_document.origin.json
 }
