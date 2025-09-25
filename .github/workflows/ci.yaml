@@ -3,7 +3,11 @@ name: CI Pipeline
 on: 
   pull_request:
     branches:
-      - main 
+      - main
+      
+  push:
+    branches:
+      - main
 
 jobs:
   build:
@@ -36,3 +40,32 @@ jobs:
 
       - name: Build project
         run: npm run build
+
+      - name: Create Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: build
+          name: bundle
+    
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v5.0.0
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Get Bundle
+        uses: actions/download-artifact@v5
+        with:
+          name: bundle
+
+      - name: Rollout Stage Appication
+        if: ${{ github.event == 'pull_request' }}
+        run: aws s3 sync . s3://hmanzursoft-fullstacklabs-rdicidr-stage --delete
+
+      - name: Rollout Prod Appication
+        if: ${{ github.event == 'push' }}
+        run: aws s3 sync . s3://hmanzursoft-fullstacklabs-rdicidr-prod --delete
