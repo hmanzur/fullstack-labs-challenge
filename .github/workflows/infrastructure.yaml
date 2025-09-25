@@ -28,6 +28,8 @@ jobs:
         run: terraform plan -no-color -input=false
 
   provisioning:
+    needs: 
+      - validate
     runs-on: ubuntu-latest
     defaults:
       run:

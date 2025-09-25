@@ -8,12 +8,11 @@ terraform {
 
   backend "s3" {
     bucket = "hmanzursoft-fullstack-labs"
+    region = "us-east-2"
   }
 }
 
 provider "aws" {
-  region = "us-east-2"
-
   default_tags {
     tags = {
       Environment = var.environment
