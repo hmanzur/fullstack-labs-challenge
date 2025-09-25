@@ -63,11 +63,12 @@ jobs:
         uses: actions/download-artifact@v5
         with:
           name: bundle
+          path: ./build
 
       - name: Rollout Stage Appication
         if: ${{ github.event == 'pull_request' }}
-        run: aws s3 sync . s3://${{ vars.APPLICATION_BUCKET }}-stage --delete
+        run: aws s3 sync ./build s3://${{ vars.APPLICATION_BUCKET }}-stage --delete
 
       - name: Rollout Prod Appication
         if: ${{ github.event == 'push' }}
-        run: aws s3 sync . s3://${{ vars.APPLICATION_BUCKET }}-prod --delete
+        run: aws s3 sync ./build s3://${{ vars.APPLICATION_BUCKET }}-prod --delete
