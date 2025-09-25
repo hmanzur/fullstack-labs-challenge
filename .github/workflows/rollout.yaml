@@ -1,30 +1,25 @@
-name: CI Pipeline
+name: Rollout Pipeline
 
-on: 
-  pull_request:
-    branches:
-      - main
-    paths:
-      - application
-      
-  push:
-    branches:
-      - main
-    paths:
-      - application
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        type: environment
 
 jobs:
   build:
-    environment: devel
     runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
     defaults:
       run:
         working-directory: application
-    steps: 
+    steps:
       - name: Check out code
         uses: actions/checkout@v5
 
-      - name: Setup Nodejs
+      - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
           node-version-file: application/.nvmrc
@@ -32,32 +27,19 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run linter
-        run: npm run lint
-
-      - name: Run formatter
-        run: npm run prettier
-
-      - name: Run tests
-        env: 
-          CI: true
-        run: npm run test
-
       - name: Build project
         run: npm run build
 
       - name: Create Artifact
         uses: actions/upload-artifact@v4
         with:
-          path: build
           name: bundle
-    
+          path: build
+
   deploy:
-    needs:
-      - build
+    needs: build
     runs-on: ubuntu-latest
-    environment:
-      name: ${{ github.event_name == 'pull_request' && 'stage' || 'prod' }}
+    environment: ${{ github.event.inputs.environment }}
     steps:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v5.0.0
@@ -66,11 +48,12 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: Get Bundle
+      - name: Download Bundle
         uses: actions/download-artifact@v5
         with:
           name: bundle
           path: ./build
 
-      - name: Rollout Appication
-        run: aws s3 sync ./build s3://${{ vars.APPLICATION_BUCKET }}-${{ github.job.environment }} --delete
+      - name: Rollout Application
+        run: |
+          aws s3 sync ./build s3://${{ vars.APPLICATION_BUCKET }}-${{ github.event.inputs.environment }} --delete

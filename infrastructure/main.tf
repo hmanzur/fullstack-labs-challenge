@@ -15,6 +15,10 @@ resource "aws_cloudfront_distribution" "cdn" {
     domain_name              = aws_s3_bucket.site.bucket_regional_domain_name
     origin_access_control_id = aws_cloudfront_origin_access_control.origin.id
     origin_id                = "s3-origin"
+
+    s3_origin_config {
+      origin_access_identity = ""
+    }
   }
 
   viewer_certificate {
@@ -42,7 +46,7 @@ resource "aws_cloudfront_distribution" "cdn" {
       restriction_type = "none"
     }
   }
-  
+
   tags = {
     Name        = "${var.name}-${var.environment}-cdn"
     Description = "CloudFront distribution for ${var.name} in ${var.environment} environment serving content from associated S3 bucket"
@@ -51,7 +55,7 @@ resource "aws_cloudfront_distribution" "cdn" {
 
 data "aws_iam_policy_document" "origin" {
   statement {
-    sid    = "AllowCloudFrontServicePrincipalReadWrite"
+    sid    = "AllowCloudFrontServicePrincipalRead"
     effect = "Allow"
 
     principals {
@@ -61,7 +65,6 @@ data "aws_iam_policy_document" "origin" {
 
     actions = [
       "s3:GetObject",
-      "s3:PutObject",
     ]
 
     resources = [
@@ -76,7 +79,10 @@ data "aws_iam_policy_document" "origin" {
   }
 }
 
+
 resource "aws_s3_bucket_policy" "policy" {
   bucket = aws_s3_bucket.site.bucket
   policy = data.aws_iam_policy_document.origin.json
+
+  depends_on = [aws_cloudfront_distribution.cdn]
 }
