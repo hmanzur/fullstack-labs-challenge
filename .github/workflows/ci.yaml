@@ -48,6 +48,8 @@ jobs:
           name: bundle
     
   deploy:
+    needs:
+      - build
     runs-on: ubuntu-latest
     steps:
       - name: Configure AWS Credentials
