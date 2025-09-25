@@ -5,13 +5,13 @@ on:
     branches:
       - main
     paths:
-      - application
+      - 'application/*'
       
   push:
     branches:
       - main
     paths:
-      - application
+      - 'application/*'
 
 jobs:
   build:
