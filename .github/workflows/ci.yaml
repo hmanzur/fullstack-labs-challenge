@@ -66,8 +66,8 @@ jobs:
 
       - name: Rollout Stage Appication
         if: ${{ github.event == 'pull_request' }}
-        run: aws s3 sync . s3://hmanzursoft-fullstacklabs-rdicidr-stage --delete
+        run: aws s3 sync . s3://${{ vars.APPLICATION_BUCKET }}-stage --delete
 
       - name: Rollout Prod Appication
         if: ${{ github.event == 'push' }}
-        run: aws s3 sync . s3://hmanzursoft-fullstacklabs-rdicidr-prod --delete
+        run: aws s3 sync . s3://${{ vars.APPLICATION_BUCKET }}-prod --delete
