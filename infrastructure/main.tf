@@ -45,7 +45,7 @@ resource "aws_cloudfront_distribution" "cdn" {
   
   tags = {
     Name        = "${var.name}-${var.environment}-cdn"
-    Description = "CloudFront distribution for ${var.name} in the ${var.environment} environment, serving content from the associated S3 bucket"
+    Description = "CloudFront distribution for ${var.name} in ${var.environment} environment serving content from associated S3 bucket"
   }
 }
 
